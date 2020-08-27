@@ -1,15 +1,18 @@
 ﻿import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtQuick.VirtualKeyboard 2.4
+//import QtQuick.VirtualKeyboard 2.4
+//import QtQuick.VirtualKeyboard.Settings 2.0
 
 Window {
     id: window
     visible: true
 //    visibility: Window.FullScreen
-    screen: Qt.application.screens[0]
+    screen: Qt.application.screens[1]
     width: 1024
     height: 768
     title: qsTr("Yunreserve")
+
+
     Image {
         id: window_background
         anchors.fill: parent
@@ -19,6 +22,7 @@ Window {
             id: brandIcon
             width: 300
             height: 300
+            anchors.horizontalCenterOffset: -7
             anchors.verticalCenterOffset: -250
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -27,10 +31,13 @@ Window {
         }
     }
 
-
     Loader{
         id: pageLoader
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: 0
+        anchors.verticalCenter: parent.verticalCenter
         source: "./components/" + controller.pageSource + ".qml"
         state: controller.pageState
         states: [
@@ -80,32 +87,4 @@ Window {
         }
     }
 
-    InputPanel {
-        id: inputPanel
-        z: 99
-        x: 0
-        y: window.height
-        width: window.width
-
-        states: State {
-            name: "visible"
-            when: inputPanel.active
-            PropertyChanges {
-                target: inputPanel
-                y: window.height - inputPanel.height
-            }
-        }
-        transitions: Transition {
-            from: ""
-            to: "visible"
-            reversible: true
-            ParallelAnimation {
-                NumberAnimation {
-                    properties: "y"
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                }
-            }
-        }
-    }
 }

@@ -62,5 +62,21 @@
         <file>img/word/welcomeText.png</file>
         <file>components/ChooseChannel.qml</file>
         <file>components/Login.qml</file>
+        <file>components/channels/UpperLeft.qml</file>
+        <file>components/channels/UpperRight.qml</file>
+        <file>components/channels/BottomLeft.qml</file>
+        <file>components/channels/BottomRight.qml</file>
+        <file>components/Member.qml</file>
+        <file>components/Contract.qml</file>
+        <file>components/Perchase.qml</file>
+        <file>components/payment/TaiwanPay.qml</file>
+        <file>components/payment/LinePay.qml</file>
+        <file>img/icon/linePay_icon.png</file>
+        <file>img/icon/taiwanPay_icon.jpg</file>
+        <file>img/button/back.png</file>
+        <file>components/CloseChannel.qml</file>
+        <file>components/Thanks.qml</file>
+        <file>components/Upload.qml</file>
+        <file>components/Recall.qml</file>
     </qresource>
 </RCC>

@@ -30,7 +30,8 @@ Item {
     MouseArea{
         anchors.fill: parent
         onClicked: {
-            controller.welcome_clicked()
+            controller.setRestartTimer("1")
+            controller.to_page("ChooseFunction")
         }
     }
 

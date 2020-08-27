@@ -19,19 +19,21 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_perchase()
+                    controller.setFunction("1")
+                    controller.setChannelState()
                 }
             }
         }
     }
-
     Image {
         id: chooseFunction_upload
         width: 200
@@ -45,19 +47,21 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_upload()
+                    controller.setFunction("2")
+                    controller.to_page("Login")
                 }
             }
         }
     }
-
     Image {
         id: chooseFunction_recall
         width: 200
@@ -72,19 +76,21 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_recall()
+                    controller.setFunction("3")
+                    controller.to_page("Login")
                 }
             }
         }
     }
-
     Image {
         id: chooseFunction_signup
         width: 150
@@ -100,20 +106,20 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_signup()
+                    controller.getMemberQrcode("1")
                 }
             }
         }
     }
-
-
     Image {
         id: chooseFunction_changeInfo
         width: 150
@@ -128,21 +134,20 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_changeInfo()
+                    controller.getMemberQrcode("2")
                 }
             }
         }
     }
-
-
-
     Image {
         id: chooseFunction_forgetPassword
         x: 7
@@ -160,14 +165,16 @@ Item {
             onPressed: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
                     parent.opacity = 0.3
+                    controller.setRestartTimer("0")
                 }
             }
             onReleased: {
                 parent.opacity = 1
+                controller.setRestartTimer("1")
             }
             onClicked: {
                 if(measureRadius(parent.width/2, mouseX, mouseY)){
-                    controller.chooseFunction_forgetPassword()
+                    controller.getMemberQrcode("3")
                 }
             }
         }

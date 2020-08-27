@@ -3,6 +3,7 @@
 #include <QQmlContext>
 
 #include "controller.h"
+#include "QZXingImageProvider.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     QQmlContext *context = engine.rootContext();
     controller ct;
     context->setContextProperty("controller", &ct);
+    engine.addImageProvider(QLatin1String("QZXing"), new QZXingImageProvider);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -1,5 +1,7 @@
 QT += quick virtualkeyboard
 
+include(QZXing/QZXing.pri)
+
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -27,6 +29,8 @@ LIBS += \
 
 SOURCES += \
         controller.cpp \
+        dbmgr.cpp \
+        machine_controller.cpp \
         main.cpp \
         recorder.cpp
 
@@ -45,5 +49,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     controller.h \
+    dbmgr.h \
+    machine_controller.h \
     recorder.h \
 
