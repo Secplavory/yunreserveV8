@@ -168,6 +168,20 @@ Item {
                 }
             }
         ]
+        MouseArea{
+            anchors.fill: parent
+            onPressed: {
+                controller.setRestartTimer("0")
+                parent.opacity = 0.3
+            }
+            onReleased: {
+                controller.setRestartTimer("1")
+                parent.opacity = 1
+            }
+            onClicked: {
+                controller.channelClicked("4")
+            }
+        }
     }
 
     Image {
@@ -198,6 +212,20 @@ Item {
                 }
             }
         ]
+        MouseArea{
+            anchors.fill: parent
+            onPressed: {
+                controller.setRestartTimer("0")
+                parent.opacity = 0.3
+            }
+            onReleased: {
+                controller.setRestartTimer("1")
+                parent.opacity = 1
+            }
+            onClicked: {
+                controller.channelClicked("5")
+            }
+        }
     }
 
     Image {
@@ -229,6 +257,19 @@ Item {
                 }
             }
         ]
+        MouseArea{
+            anchors.fill: parent
+            onPressed: {
+                controller.setRestartTimer("0")
+                parent.opacity = 0.3
+            }
+            onReleased: {
+                controller.setRestartTimer("1")
+                parent.opacity = 1
+            }
+            onClicked: {
+                controller.channelClicked("6")
+            }
+        }
     }
-
 }
