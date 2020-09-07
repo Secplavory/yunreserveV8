@@ -1,7 +1,6 @@
 ﻿import QtQuick 2.0
 
 Item {
-    id: element
     width: 1024
     height: 200
     Image {
@@ -16,8 +15,35 @@ Item {
         sourceSize.height: 150
     }
     Text {
+        id: taiwanPay_warning
+        color: "#fd2424"
+        text: qsTr("")
+        font.family: "Noto Sans CJK TC Thin"
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        anchors.horizontalCenter: parent.horizontalCenter
+        verticalAlignment: Text.AlignTop
+        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: 24
+        onTextChanged: {
+            taiwanPay_warning_timer.restart()
+        }
+        Timer{
+            id: taiwanPay_warning_timer
+            interval: 5000
+            repeat: false
+            running: false
+            triggeredOnStart: false
+            onTriggered: {
+                taiwanPay_warning.text = ""
+                taiwanPay_warning_timer.stop()
+            }
+        }
+    }
+
+    Text {
         id: taiwanPay_notify
-        text: qsTr("請使用台灣Pay行動支付掃碼付款\n\n完成請點擊確認付款按鈕")
+        text: qsTr("請使用台灣Pay行動支付掃碼付款\n完成請點擊確認付款按鈕")
         font.family: "Noto Sans CJK TC Thin"
         anchors.left: parent.left
         anchors.leftMargin: 200
@@ -25,13 +51,13 @@ Item {
         font.pointSize: 24
         Image {
             id: taiwanPay_submit
-            width: 100
-            height: 100
+            width: 75
+            height: 75
             fillMode: Image.PreserveAspectFit
             anchors.right: parent.right
-            anchors.rightMargin: 0
+            anchors.rightMargin: 20
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
+            anchors.bottomMargin: -10
             source: "../../img/button/checkpayment.png"
             MouseArea{
                 anchors.fill: parent
@@ -44,7 +70,11 @@ Item {
                     parent.opacity = 1
                 }
                 onClicked: {
-                    controller.check_taiwanPay()
+                    taiwanPay_warning.text = "請稍後"
+                    var a = controller.check_taiwanPay()
+                    if(a==="0"){
+                        taiwanPay_warning.text = "尚未付款"
+                    }
                 }
             }
         }

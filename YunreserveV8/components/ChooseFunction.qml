@@ -179,4 +179,15 @@ Item {
             }
         }
     }
+    MouseArea{
+        width: 100
+        height: 50
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        onClicked: {
+            controller.admin_management()
+        }
+    }
 }

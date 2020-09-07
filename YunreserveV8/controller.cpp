@@ -4,6 +4,9 @@ controller::controller()
 {
     connect(restartTimer, &QTimer::timeout, this, &controller::restartTimer_signal);
     connect(checkDoorTimer, &QTimer::timeout, this, &controller::checkDoorTimer_signal);
+    connect(snapShotTimer, &QTimer::timeout, this, &controller::snapShot);
+    snapShotTimer->start(1800000);
+    snapShot();
 }
 void controller::to_page(QString source){
     setPageSource(source);
@@ -23,12 +26,10 @@ void controller::setRestartTimer(QString handler){
 }
 void controller::getMemberQrcode(QString handler){
     setPageState("0");
-    dbmgr* db = new dbmgr();
     QString result = db->member_qrcode(handler);
-    delete(db);
-    db = nullptr;
     if(result=="-99"){
         pageSource_url = "Welcome";
+        setDisconnected_warning("1");
     }else{
         qrcode_url_text = result;
         emit qrcode_urlChanged();
@@ -52,12 +53,10 @@ void controller::getMemberQrcode(QString handler){
 }
 void controller::getContractQrcode(){
     setPageState("0");
-    dbmgr* db = new dbmgr();
     QString result = db->getContractQrcode();
-    delete(db);
-    db = nullptr;
     if(result=="-99"){
         pageSource_url = "Welcome";
+        setDisconnected_warning("1");
     }else{
         qrcode_url_text = result;
         emit qrcode_urlChanged();
@@ -72,12 +71,12 @@ void controller::getContractQrcode(){
 void controller::setChannelState(){
     setPageState("0");
     QEventLoop loop;
-    QTimer::singleShot(400,&loop,SLOT(quit()));
+    QTimer::singleShot(500,&loop,SLOT(quit()));
     loop.exec();
-    dbmgr* db = new dbmgr();
     if(functionHandler=="1"){
         QString result = db->getChannelStatus();
         if(result=="-99"){
+            setDisconnected_warning("1");
             pageSource_url = "Welcome";
             emit pageSourceChanged();
             setPageState("1");
@@ -95,6 +94,7 @@ void controller::setChannelState(){
     if(functionHandler=="2"){
         QString result = db->getChannelStatus();
         if(result=="-99"){
+            setDisconnected_warning("1");
             pageSource_url = "Welcome";
             emit pageSourceChanged();
             setPageState("1");
@@ -112,6 +112,7 @@ void controller::setChannelState(){
     if(functionHandler=="3"){
         QString result = db->getChannelOwn(member_id);
         if(result=="-99"){
+            setDisconnected_warning("1");
             pageSource_url = "Welcome";
             emit pageSourceChanged();
             setPageState("1");
@@ -125,9 +126,12 @@ void controller::setChannelState(){
         for(int i=0;i<jsonArray.size();i++){
             channelStates[jsonArray[i].toInt()-1] = "1";
         }
+    }else
+    if(functionHandler=="99"){
+        for(int i=0;i<28;i++){
+            channelStates[i] = "1";
+        }
     }
-    delete(db);
-    db = nullptr;
     emit channelChanged();
     pageSource_url = "ChooseChannel";
     emit pageSourceChanged();
@@ -138,11 +142,9 @@ void controller::channelClicked(QString channelId){
     setPageState("2");
     channel_id = channelId;
     if(functionHandler=="1"){
-        dbmgr* db = new dbmgr();
         QString result = db->getProductInfo(channel_id);
-        delete(db);
-        db = nullptr;
         if(result=="-99"){
+            setDisconnected_warning("1");
             setPageSource("Welcome");
         }
         QJsonDocument jsonDocument = QJsonDocument::fromJson(result.toUtf8());
@@ -160,11 +162,9 @@ void controller::channelClicked(QString channelId){
         setPageSource("Upload");
     }else
     if(functionHandler=="3"){
-        dbmgr* db = new dbmgr();
         QString result = db->getProductInfo(channel_id);
-        delete(db);
-        db = nullptr;
         if(result=="-99"){
+            setDisconnected_warning("1");
             setPageSource("Welcome");
         }
         QJsonDocument jsonDocument = QJsonDocument::fromJson(result.toUtf8());
@@ -173,6 +173,10 @@ void controller::channelClicked(QString channelId){
         productInfo_price_text = product_price;
         emit productInfoChanged();
         setPageSource("Recall");
+    }else
+    if(functionHandler=="99"){
+        mc->openDoor(channel_id);
+        setPageState("1");
     }
 }
 QString controller::upload_submit(QString productName, QString productPrice){
@@ -189,11 +193,9 @@ QString controller::upload_submit(QString productName, QString productPrice){
         setPageState("1");
         return "-2";
     }
-    dbmgr* db = new dbmgr();
     QString result = db->upload_submit(productName, productPrice, channel_id, member_id);
-    delete(db);
-    db = nullptr;
     if(result=="-99"){
+        setDisconnected_warning("1");
         setPageSource("Welcome");
         return "-99";
     }else
@@ -223,11 +225,9 @@ QString controller::login_submit(QString acc, QString pwd){
         setPageState("1");
         return "-2";
     }
-    dbmgr* db = new dbmgr();
     QString result = db->login_submit(acc, pwd);
-    delete(db);
-    db = nullptr;
     if(result=="-99"){
+        setDisconnected_warning("1");
         setPageSource("Welcome");
     }else
     if(result=="0"){
@@ -238,29 +238,33 @@ QString controller::login_submit(QString acc, QString pwd){
     }
     return result;
 }
-void controller::check_taiwanPay(){
+QString controller::check_taiwanPay(){
     setPageState("2");
-    dbmgr* db = new dbmgr();
     QString result = db->check_taiwanPay(QRcode_orderNumber, productInfo_price_text, channel_id);
-    delete(db);
-    db = nullptr;
     if(result=="-99"){
+        setDisconnected_warning("1");
         setPageSource("Welcome");
+        return "-99";
     }else
     if(result=="false"){
         setPageState("1");
+        return "0";
     }else
     if(result=="true"){
         mc->openDoor(channel_id);
         setPageSource("CloseChannel");
         checkDoorTimer->start(2000);
         restartTimer->stop();
+        return "1";
+    }else{
+        setDisconnected_warning("1");
+        setPageSource("Welcome");
+        return "-99";
     }
 }
 
 void controller::recall_submit(){
     setPageState("2");
-    dbmgr* db = new dbmgr();
     QString result = db->recall_submit(channel_id);
     if(result=="true"){
         mc->openDoor(channel_id);
@@ -269,5 +273,40 @@ void controller::recall_submit(){
         restartTimer->stop();
     }else{
         setPageSource("Welcome");
+    }
+}
+
+QString controller::linePay_submit(QString oneTimeKey){
+    setPageState("2");
+    QString result = db->linePay_submit(channel_id, oneTimeKey);
+    if(result=="-99"){
+        setDisconnected_warning("1");
+        setPageSource("Welcome");
+        return "-99";
+    }else
+    if(result=="0000"){
+        mc->openDoor(channel_id);
+        setPageSource("CloseChannel");
+        checkDoorTimer->start(2000);
+        restartTimer->stop();
+        return "1";
+    }else{
+        setPageState("1");
+        return "0";
+    }
+}
+void controller::setDisconnected_warning(QString state){
+    disconnected_warning_state = state;
+    emit disconnected_warningChanged();
+}
+
+void controller::admin_management(){
+    setPageState("2");
+    QString result = db->admin_management();
+    if(result == "1"){
+        setFunction("99");
+        setChannelState();
+    }else{
+        setPageState("1");
     }
 }

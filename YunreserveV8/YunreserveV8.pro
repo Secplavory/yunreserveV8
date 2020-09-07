@@ -1,4 +1,4 @@
-QT += quick virtualkeyboard
+QT += quick virtualkeyboard widgets
 
 include(QZXing/QZXing.pri)
 

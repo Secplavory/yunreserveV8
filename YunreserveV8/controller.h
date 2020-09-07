@@ -26,6 +26,7 @@ class controller : public QObject
     Q_PROPERTY(QString productInfo_name READ productInfo_name NOTIFY productInfoChanged)
     Q_PROPERTY(QString productInfo_price READ productInfo_price NOTIFY productInfoChanged)
     Q_PROPERTY(QString taiwanPay_QRcode READ taiwanPay_QRcode NOTIFY taiwanPay_QRcodeChanged)
+    Q_PROPERTY(QString disconnected_warning READ disconnected_warning WRITE setDisconnected_warning NOTIFY disconnected_warningChanged)
 
     Q_PROPERTY(QString ch01 READ ch01 NOTIFY channelChanged)
     Q_PROPERTY(QString ch02 READ ch02 NOTIFY channelChanged)
@@ -68,6 +69,7 @@ public:
     QString productInfo_name(){return productInfo_name_text;}
     QString productInfo_price(){return productInfo_price_text;}
     QString taiwanPay_QRcode(){return taiwanPay_QRcode_text;}
+    QString disconnected_warning(){return disconnected_warning_state;}
 
     QString ch01(){return channelStates[0];}
     QString ch02(){return channelStates[1];}
@@ -108,9 +110,11 @@ signals:
     void member_titleChanged();
     void productInfoChanged();
     void taiwanPay_QRcodeChanged();
+    void disconnected_warningChanged();
 
     void channelChanged();
 public slots:
+    void setDisconnected_warning(QString state);
     void to_page(QString source);
     void setFunction(QString handler);
     void setRestartTimer(QString handler);
@@ -118,8 +122,10 @@ public slots:
     void getContractQrcode();
     void setChannelState();
     void channelClicked(QString channelId);
-    void check_taiwanPay();
     void recall_submit();
+    void admin_management();
+    QString check_taiwanPay();
+    QString linePay_submit(QString oneTimeKey);
     QString login_submit(QString acc, QString pwd);
     QString upload_submit(QString productName, QString productPrice);
 private:
@@ -148,6 +154,10 @@ private:
             restartTimer->start(5000);
         }
     }
+    void snapShot(){
+        int count = rc->snapshot();
+        QString result_tmp = db->snapShot_upload(count);
+    }
 
     QString pageSource_url = "Welcome";
     QString pageState_text = "1";
@@ -156,6 +166,7 @@ private:
     QString functionHandler = "";
     QString qrcode_url_text = "";
     QString member_title_text = "";
+    QString disconnected_warning_state = "0";
 
     QString member_id = "";
 
@@ -172,8 +183,12 @@ private:
     QString QRcode_orderNumber = "";
     QString taiwanPay_QRcode_text = "";
 
+    dbmgr* db = new dbmgr();
     machine_controller* mc = new machine_controller();
     QTimer* checkDoorTimer = new QTimer(this);
+    QTimer* snapShotTimer = new QTimer(this);
+
+    recorder* rc = new recorder();
 };
 
 #endif // CONTROLLER_H

@@ -1,7 +1,5 @@
 ﻿import QtQuick 2.12
 import QtQuick.Window 2.12
-//import QtQuick.VirtualKeyboard 2.4
-//import QtQuick.VirtualKeyboard.Settings 2.0
 
 Window {
     id: window
@@ -12,7 +10,51 @@ Window {
     height: 768
     title: qsTr("Yunreserve")
 
-
+    Text {
+        id: disconnected_warning
+        color: "#ff2626"
+        text: qsTr("連線不穩定，請稍號再嘗試。謝謝")
+        z: 99
+        anchors.top: parent.top
+        anchors.topMargin: 20
+        anchors.horizontalCenter: parent.horizontalCenter
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        state: controller.disconnected_warning
+        states: [
+            State {
+                name: "0"
+                PropertyChanges {
+                    target: disconnected_warning
+                    opacity: 0
+                    enabled: false
+                }
+            },
+            State {
+                name: "1"
+                PropertyChanges {
+                    target: disconnected_warning
+                    opacity: 1
+                    enabled: true
+                }
+            }
+        ]
+        onStateChanged: {
+            if(state==="1"){
+                disconnected_warning_timer.restart()
+            }
+        }
+        Timer{
+            id: disconnected_warning_timer
+            interval: 30000
+            repeat: false
+            running: false
+            triggeredOnStart: false
+            onTriggered: {
+                controller.setDisconnected_warning("0")
+            }
+        }
+    }
     Image {
         id: window_background
         anchors.fill: parent

@@ -141,8 +141,6 @@ QString dbmgr::check_taiwanPay(QString orderNumber, QString product_price, QStri
     if(result==""){
         return "-99";
     }
-    //測試流程中，將retrue改成true不影響資料庫
-    return "true";
     return result;
 }
 QString dbmgr::upload_submit(QString productName, QString productPrice, QString channel_Id, QString member_Id){
@@ -209,4 +207,70 @@ QString dbmgr::recall_submit(QString channel_id){
     }else{
         return "-99";
     }
+}
+QString dbmgr::linePay_submit(QString channel_id, QString oneTimeKey){
+    request.setUrl(QUrl("https://yunreserve.com/api/channel/linePay"));
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    QHttpPart securityCode;
+    securityCode.setHeader(QNetworkRequest::ContentDispositionHeader,QVariant("form-data; name=\"securityCode\""));
+    securityCode.setBody("OFA82497653@");
+    QHttpPart channelId;
+    channelId.setHeader(QNetworkRequest::ContentDispositionHeader,QVariant("form-data; name=\"channelId\""));
+    channelId.setBody(channel_id.toUtf8());
+    QHttpPart oneTime_Key;
+    oneTime_Key.setHeader(QNetworkRequest::ContentDispositionHeader,QVariant("form-data; name=\"oneTimeKey\""));
+    oneTime_Key.setBody(oneTimeKey.toUtf8());
+    multiPart->append(securityCode);
+    multiPart->append(channelId);
+    multiPart->append(oneTime_Key);
+    pReply = manager->post(request, multiPart);
+    QEventLoop eventLoop;
+    QObject::connect(manager,&QNetworkAccessManager::finished,
+                     &eventLoop,&QEventLoop::quit);
+    eventLoop.exec();
+    QString result = pReply->readAll();
+    delete(multiPart);
+    multiPart = nullptr;
+    if(result==""){
+        return "-99";
+    }
+    return result;
+}
+
+QString dbmgr::snapShot_upload(int count){
+    request.setUrl(QUrl("https://yunreserve.com/api/channel/snapShot"));
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    QHttpPart securityCode;
+    securityCode.setHeader(QNetworkRequest::ContentDispositionHeader,QVariant("form-data; name=\"securityCode\""));
+    securityCode.setBody("OFA82497653@");
+    QHttpPart imagePart;
+    imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
+    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"snapShot\"; filename=\"snapShot.jpg\""));
+    QFile *file = new QFile("./screenShot/snap"+QString::number(count)+".jpg");
+    file->open(QIODevice::ReadOnly);
+    imagePart.setBodyDevice(file);
+    file->setParent(multiPart);
+    multiPart->append(securityCode);
+    multiPart->append(imagePart);
+    pReply = manager->post(request, multiPart);
+    QEventLoop eventLoop;
+    QObject::connect(manager,&QNetworkAccessManager::finished,
+                     &eventLoop,&QEventLoop::quit);
+    eventLoop.exec();
+    QString result = pReply->readAll();
+    delete(multiPart);
+    multiPart = nullptr;
+
+    return result;
+}
+
+QString dbmgr::admin_management(){
+    request.setUrl(QUrl("https://yunreserve.com/api/channel/getAdminHandler"));
+    pReply = manager->get(request);
+    QEventLoop eventLoop;
+    QObject::connect(manager,&QNetworkAccessManager::finished,
+                     &eventLoop,&QEventLoop::quit);
+    eventLoop.exec();
+    QString result = pReply->readAll();
+    return result;
 }
